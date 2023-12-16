@@ -1,4 +1,4 @@
-export const DECK = [
+const DECK = [
     { suit: "C", rank: "A" },
     { suit: "C", rank: "2" },
     { suit: "C", rank: "3" },
@@ -53,8 +53,8 @@ export const DECK = [
     { suit: "S", rank: "K" },
 ];
 
-export function shuffleDeck(deck: { suit: string; rank: string; }[]) {
-    const copyDeck = deck;
+export function createShuffledDeck(): { suit: string; rank: string; }[] {
+    const copyDeck = [...DECK]
     for (let i = copyDeck.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         const temp = copyDeck[i];
@@ -63,5 +63,3 @@ export function shuffleDeck(deck: { suit: string; rank: string; }[]) {
     }
     return copyDeck;
 }
-
-

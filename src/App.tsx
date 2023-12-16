@@ -4,8 +4,6 @@ import { DECK, shuffleDeck } from "./Deck";
 import Game from "./Game";
 
 function App() {
-  const deck = DECK;
-  console.log(deck);
 
   return (
     <>
