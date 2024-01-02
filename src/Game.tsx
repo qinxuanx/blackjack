@@ -20,25 +20,9 @@ const Game = () => {
   enum GameState {
     Betting,
     PlayerTurn,
-    DealerTurn,
     RoundOver,
-    GameOver,
   }
   const [currentGameState, setCurrentGameState] = useState(GameState.Betting);
-
-  useEffect(() => {
-    console.log("Player bid amount: ", playerBetAmount);
-    console.log("Player chips left: ", playerChips);
-  }, [playerBetAmount, playerChips]);
-
-  useEffect(() => {
-    console.log("Current shuffled deck: ", currentDeck);
-  }, [currentDeck]);
-
-  useEffect(() => {
-    console.log("Player cards: ", playerCards);
-    console.log("Dealer cards: ", dealerCards);
-  }, [playerCards, dealerCards]);
 
   // Player has set their bet amount, start the game and go to player's turn
   function handleBet() {
@@ -50,10 +34,12 @@ const Game = () => {
       alert("You don't have enough chips!");
       return;
     }
-    setPlayerChips(playerChips - playerBetAmount);
+    const newPlayerChips = playerChips - playerBetAmount;
+    setPlayerChips(newPlayerChips);
 
     const newDeck = createShuffledDeck();
     //const newDeck = TEST_DECK;
+    //console.log(newDeck);
     setCurrentDeck(newDeck);
 
     // Deal to player and dealer
@@ -70,10 +56,10 @@ const Game = () => {
     if (newPlayerCardsValue === 21 || newDealerCardsValue === 21) {
       if (newPlayerCardsValue === 21 && newDealerCardsValue === 21) {
         setGameMessage("Both players have blackjack! It's a DRAW!");
-        setPlayerChips(playerChips + playerBetAmount);
+        setPlayerChips(newPlayerChips + playerBetAmount);
       } else if (newPlayerCardsValue > newDealerCardsValue) {
         setGameMessage("You have blackjack! You WIN!");
-        setPlayerChips(playerChips + playerBetAmount * 2 + Math.floor(playerBetAmount / 2));
+        setPlayerChips(newPlayerChips + playerBetAmount * 2 + Math.floor(playerBetAmount / 2));
       } else {
         setGameMessage("Dealer has blackjack! You LOSE!");
       }
@@ -99,8 +85,6 @@ const Game = () => {
   }
 
   function handleStand() {
-    setCurrentGameState(GameState.DealerTurn);
-
     let tempDealerCardsValue = dealerCardsValue;
     let tempDeckIndex = currentDeckIndex;
     const newDealerCards = [...dealerCards];
@@ -116,6 +100,7 @@ const Game = () => {
 
     if (tempDealerCardsValue > 21) {
       setGameMessage("Dealer busts! You WIN!");
+      setPlayerChips(playerChips + playerBetAmount * 2);
     } else if (tempDealerCardsValue > playerCardsValue) {
       setGameMessage("Dealer wins!");
     } else if (tempDealerCardsValue < playerCardsValue) {
@@ -139,6 +124,9 @@ const Game = () => {
     <>
       {currentGameState === GameState.Betting && (
         <>
+          <Card suit="S" rank="A" />
+          <Card suit="H" rank="J" />
+          <br />
           <label>Current Chips: {playerChips}</label>
           <br />
           {playerChips > 0 && (
@@ -169,7 +157,7 @@ const Game = () => {
         </>
       )}
 
-      {currentGameState != GameState.Betting && (
+      {currentGameState !== GameState.Betting && (
         <>
           {gameMessage} <br />
           <label>Player Cards: {playerCardsValue}</label>
@@ -178,19 +166,22 @@ const Game = () => {
             <Card key={index} suit={card.suit} rank={card.rank} />
           ))}
           <br />
-          <label>Dealer Cards: {dealerCardsValue}</label>
+          <label>Dealer Cards: {currentGameState !== GameState.PlayerTurn ? dealerCardsValue : null}</label>
           <br />
           {dealerCards.map((card, index) => (
-            <Card key={index} suit={card.suit} rank={card.rank} />
+            <Card
+              key={index}
+              suit={currentGameState === GameState.PlayerTurn && index === 0 ? "back" : card.suit}
+              rank={card.rank}
+            />
           ))}
           <br />
-          {currentGameState != GameState.RoundOver && (
+          {currentGameState !== GameState.RoundOver ? (
             <>
               <button onClick={() => handleHit()}>Hit</button>
               <button onClick={() => handleStand()}>Stand</button>
             </>
-          )}
-          {currentGameState === GameState.RoundOver && (
+          ) : (
             <>
               <button onClick={() => handleNextRound()}>Next Round</button>
             </>

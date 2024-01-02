@@ -88,10 +88,10 @@ export function getTotalCardsValue(cards: { suit: string; rank: string }[]) {
 
 export const TEST_DECK = [
   { suit: "C", rank: "10" }, // player
-  { suit: "C", rank: "4" },
-  { suit: "C", rank: "2" }, // player
   { suit: "C", rank: "10" },
-  { suit: "C", rank: "4" },
+  { suit: "C", rank: "A" }, // player
+  { suit: "C", rank: "A" },
+  { suit: "C", rank: "10" },
   { suit: "C", rank: "2" },
   { suit: "C", rank: "2" },
   { suit: "C", rank: "2" },
